@@ -6,4 +6,10 @@ Implementation of <a href="https://www.deepmind.com/blog/tackling-multiple-tasks
 
 ## Citations
 
-<a href="https://storage.googleapis.com/deepmind-media/DeepMind.com/Blog/tackling-multiple-tasks-with-a-single-visual-language-model/flamingo.pdf">Preprint</a>
+```bibtex
+@article{Alayrac2022Flamingo,
+  title   = {Flamingo: a Visual Language Model for Few-Shot Learning},
+  author  = {Jean-Baptiste Alayrac et al},
+  year    = {2022}
+}
+```

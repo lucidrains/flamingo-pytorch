@@ -21,7 +21,8 @@ perceive = PerceiverResampler(
     depth = 2,
     dim_head = 64,
     heads = 8,
-    num_latents = 64,
+    num_latents = 64,    # the number of latents to shrink your media sequence to, perceiver style
+    num_time_embeds = 4  # say you have 4 images maximum in your dialogue
 )
 
 medias = torch.randn(1, 2, 256, 1024) # (batch, time, sequence length, dimension)

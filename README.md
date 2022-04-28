@@ -31,6 +31,7 @@ resampled = perceive(medias) # (1, 2, 64, 1024) - (batch, time, num latents, dim
 
 Then you insert the `GatedCrossAttentionBlock` at different intervals in your giant language model. Your text would then attend to the perceived media from above
 
+The recommended way to derive the `media_locations` boolean tensor would be to allocate a special token id to the media, and then, at the start of your large language model, do `media_locations = text_id == media_token_id`
 
 ```python
 import torch

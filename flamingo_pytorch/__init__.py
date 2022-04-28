@@ -1,1 +1,1 @@
-from flamingo_pytorch.flamingo_pytorch import PerceiverResampler
+from flamingo_pytorch.flamingo_pytorch import PerceiverResampler, GatedCrossAttentionBlock

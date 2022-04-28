@@ -28,6 +28,29 @@ medias = torch.randn(1, 2, 256, 1024) # (batch, time, sequence length, dimension
 resampled = perceive(medias) # (1, 2, 64, 1024) - (batch, time, num latents, dimension)
 ```
 
+Then you insert the `GatedCrossAttentionBlock` at different intervals in your giant language model. Your text would then attend to the perceived media from above
+
+
+```python
+import torch
+from flamingo_pytorch import GatedCrossAttentionBlock
+
+cross_attn = GatedCrossAttentionBlock(
+    dim = 1024,
+    dim_head = 64,
+    heads = 8
+)
+
+perceived_media = torch.randn(1, 2, 64, 1024)
+
+text = torch.randn(1, 512, 1024)
+text = cross_attn(text, perceived_media)
+```
+
+That's it!
+
+Attention is all you need.
+
 ## Citations
 
 ```bibtex

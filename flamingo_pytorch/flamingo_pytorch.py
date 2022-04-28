@@ -127,7 +127,7 @@ class MaskedCrossAttention(nn.Module):
         time_mask = None,
         media_locations = None
     ):
-        b, t, m = x.shape[:3]
+        b, t, m = media.shape[:3]
         h = self.heads
 
         q = self.to_q(x)
@@ -143,6 +143,12 @@ class MaskedCrossAttention(nn.Module):
         if exists(time_mask):
             time_mask = repeat(time_mask, 'b t -> b 1 1 (t m)', m = m)
             sim = sim.masked_fill(~time_mask, -torch.finfo(sim.dtype).max)
+
+        if exists(media_locations):
+            text_time = media_locations.cumsum(dim = -1) # at each boolean of True, increment the time counter (relative to media time)
+            media_time = torch.arange(t, device = x.device) + 1
+            text_to_media_mask = rearrange(text_time, 'b i -> b 1 i 1') >= repeat(media_time, 'j -> 1 1 1 (j m)', m = m)
+            sim = sim.masked_fill(~text_to_media_mask, -torch.finfo(sim.dtype).max)
 
         sim = sim - sim.amax(dim = -1, keepdim = True).detach()
         attn = sim.softmax(dim = -1)
@@ -174,6 +180,6 @@ class GatedCrossAttentionBlock(nn.Module):
         time_mask = None,       # media mask (each text may contain different amounts of media) - (batch, time)
         media_locations = None  # boolean tensor indicating positions of media - (batch, sequence)
     ):
-        x = self.attn(x, media) * self.attn_gate.tan() + x
+        x = self.attn(x, media, time_mask = time_mask, media_locations = media_locations) * self.attn_gate.tan() + x
         x = self.ff(x) * self.ff_gate.tanh()  + x
         return x

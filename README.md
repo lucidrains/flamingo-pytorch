@@ -41,15 +41,27 @@ cross_attn = GatedCrossAttentionBlock(
     heads = 8
 )
 
+text = torch.randn(1, 512, 1024)
 perceived_media = torch.randn(1, 2, 64, 1024)
 
-text = torch.randn(1, 512, 1024)
-text = cross_attn(text, perceived_media)
+time_mask = torch.ones((1, 2)).bool()
+media_locations = torch.randint(0, 2, (1, 512)).bool()
+
+text = cross_attn(
+    text,
+    perceived_media,
+    time_mask = time_mask,
+    media_locations = media_locations
+)
 ```
 
 That's it!
 
 Attention is all you need.
+
+## Todo
+
+- [ ] integrate with  https://github.com/lucidrains/vit-pytorch and https://github.com/lucidrains/palm-pytorch , do full end-to-end example, and perhaps take care of the function that inserts every so often in the backbone of the LLM
 
 ## Citations
 

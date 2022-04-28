@@ -30,6 +30,9 @@ class PerceiverAttention(nn.Module):
         self.heads = heads
         inner_dim = dim_head * heads
 
+        self.norm_media = nn.LayerNorm(dim)
+        self.norm_latents = nn.LayerNorm(dim)
+
         self.to_q = nn.Linear(dim, inner_dim, bias = False)
         self.to_kv = nn.Linear(dim, inner_dim * 2, bias = False)
         self.to_out = nn.Linear(inner_dim, dim, bias = False)
@@ -42,6 +45,9 @@ class PerceiverAttention(nn.Module):
         n - sequence
         d - dimension
         """
+        x = self.norm_media(x)
+        latents = self.norm_latents(latents)
+
         b, m, h = *x.shape[:2], self.heads
 
         q = self.to_q(latents)
@@ -91,6 +97,8 @@ class PerceiverResampler(nn.Module):
                 FeedForward(dim = dim, mult = ff_mult)
             ]))
 
+        self.norm = nn.LayerNorm(dim)
+
     def forward(self, x):
         if x.ndim == 3:
             x = rearrange(x, 'b n d -> b 1 n d')
@@ -104,7 +112,7 @@ class PerceiverResampler(nn.Module):
             latents = attn(x, latents) + latents
             latents = ff(latents) + latents
 
-        return latents
+        return self.norm(latents)
 
 # gated cross attention
 
@@ -121,6 +129,8 @@ class MaskedCrossAttention(nn.Module):
         self.heads = heads
         inner_dim = dim_head * heads
 
+        self.norm = nn.LayerNorm(dim)
+
         self.to_q = nn.Linear(dim, inner_dim, bias = False)
         self.to_kv = nn.Linear(dim, inner_dim * 2, bias = False)
         self.to_out = nn.Linear(inner_dim, dim, bias = False)
@@ -134,6 +144,8 @@ class MaskedCrossAttention(nn.Module):
     ):
         b, t, m = media.shape[:3]
         h = self.heads
+
+        x = self.norm(x)
 
         q = self.to_q(x)
         media = rearrange(media, 'b t n d -> b (t n) d')

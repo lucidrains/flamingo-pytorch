@@ -18,13 +18,14 @@ from flamingo_pytorch import PerceiverResampler
 
 perceive = PerceiverResampler(
     dim = 1024,
+    depth = 2,
     dim_head = 64,
     heads = 8,
     num_latents = 64,
 )
 
-medias = torch.randn(1, 2, 256, 1024) # (batch, num medias, sequence length, dimension)
-resampled = perceive(medias) # (1, 2, 64, 1024) - (batch, num medias, num latents, dimension)
+medias = torch.randn(1, 2, 256, 1024) # (batch, time, sequence length, dimension)
+resampled = perceive(medias) # (1, 2, 64, 1024) - (batch, time, num latents, dimension)
 ```
 
 ## Citations

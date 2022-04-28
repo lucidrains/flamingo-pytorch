@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 setup(
   name = 'flamingo-pytorch',
   packages = find_packages(exclude=[]),
-  version = '0.0.6',
+  version = '0.0.8',
   license='MIT',
   description = 'Flamingo - Pytorch',
   author = 'Phil Wang',
@@ -20,6 +20,7 @@ setup(
     'einops>=0.4',
     'einops-exts',
     'torch>=1.6',
+    'vit-pytorch'
   ],
   classifiers=[
     'Development Status :: 4 - Beta',

@@ -53,13 +53,10 @@ class PerceiverAttention(nn.Module):
         q = self.to_q(latents)
 
         # the paper differs from Perceiver in which they also concat the key / values derived from the latents to be attended to
-        lk, lv = self.to_kv(latents).chunk(2, dim = -1)
-        k, v = self.to_kv(x).chunk(2, dim = -1)
+        kv_input = torch.cat((x, latents), dim = -2)
+        k, v = self.to_kv(kv_input).chunk(2, dim = -1)
 
-        k, v, lk, lv, q = rearrange_many((k, v, lk, lv, q), 'b t n (h d) -> b h t n d', h = h)
-
-        k = torch.cat((k, lk), dim = -2)
-        v = torch.cat((v, lv), dim = -2)
+        q, k, v = rearrange_many((q, k, v), 'b t n (h d) -> b h t n d', h = h)
 
         q = q * self.scale
 

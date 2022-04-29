@@ -120,6 +120,8 @@ flamingo_logits = flamingo_palm(dialogue, images)
 # do your usual cross entropy loss
 ```
 
+It is quite evident where this is all headed if you think beyond just images.
+
 ## Citations
 
 ```bibtex

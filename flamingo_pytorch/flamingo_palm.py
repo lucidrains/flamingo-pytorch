@@ -284,6 +284,8 @@ class FlamingoPaLM(nn.Module):
                 image_embeds = self.img_encoder(images)
 
             image_embeds = rearrange(image_embeds, '(b t) ... -> b t ...', b = batch)
+
+        if exists(image_embeds):
             image_embeds = self.perceiver_resampler(image_embeds)
 
         # go through layers

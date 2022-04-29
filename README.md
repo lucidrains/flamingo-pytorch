@@ -63,6 +63,14 @@ Attention is all you need.
 
 Integration with <a href="https://ai.googleblog.com/2022/04/pathways-language-model-palm-scaling-to.html">PaLM</a>
 
+First install `vit-pytorch` for the vision encoder
+
+```bash
+$ pip install vit-pytorch
+```
+
+Then
+
 ```python
 from vit_pytorch.vit import ViT
 from vit_pytorch.extractor import Extractor

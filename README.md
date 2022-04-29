@@ -124,9 +124,9 @@ flamingo_logits = flamingo_palm(dialogue, images)
 
 ```bibtex
 @article{Alayrac2022Flamingo,
-  title   = {Flamingo: a Visual Language Model for Few-Shot Learning},
-  author  = {Jean-Baptiste Alayrac et al},
-  year    = {2022}
+    title   = {Flamingo: a Visual Language Model for Few-Shot Learning},
+    author  = {Jean-Baptiste Alayrac et al},
+    year    = {2022}
 }
 ```
 

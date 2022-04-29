@@ -46,13 +46,11 @@ cross_attn = GatedCrossAttentionBlock(
 text = torch.randn(1, 512, 1024)
 perceived = torch.randn(1, 2, 64, 1024)
 
-time_mask = torch.ones((1, 2)).bool()
 media_locations = torch.randint(0, 2, (1, 512)).bool()
 
 text = cross_attn(
     text,
     perceived,
-    time_mask = time_mask,
     media_locations = media_locations
 )
 ```
@@ -116,9 +114,8 @@ palm_logits = flamingo_palm(text)
 
 dialogue = torch.randint(0, 20000, (4, 512))
 images = torch.randn(4, 2, 3, 256, 256)
-time_mask = torch.ones((4, 2)).bool()     # a mask designating which images are actually used, as each dialogue may have uneven number of images (may remove this to be auto-computed off the number of media tokens going forward)
 
-flamingo_logits = flamingo_palm(dialogue, images, time_mask = time_mask)
+flamingo_logits = flamingo_palm(dialogue, images)
 
 # do your usual cross entropy loss
 ```

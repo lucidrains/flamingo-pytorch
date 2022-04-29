@@ -247,14 +247,15 @@ class FlamingoPaLM(nn.Module):
         self,
         text,
         images=None,
-        image_embeds=None,
-        time_mask=None
+        image_embeds=None
     ):
-        b = text.shape[0]
+        batch, device = text.shape[0], text.device
+
+        flamingo_mode = exists(images) or exists(image_embeds)
 
         # automatically take care of freezing or unfreezing depending on what is passed in
 
-        if exists(images) or exists(image_embeds):
+        if flamingo_mode:
             # in flamingo mode, freeze everything but perceiver and gated cross attention
             freeze_all_layers_(self)
             unfreeze_all_layers_(self.perceiver_resampler)
@@ -264,7 +265,8 @@ class FlamingoPaLM(nn.Module):
 
         # derive the media token ids (as a boolean tensor), for calculating the masked cross attention
 
-        media_locations = text == self.media_token_id
+        if flamingo_mode:
+            media_locations = text == self.media_token_id
 
         text_tokens = self.token_emb(text)
 
@@ -281,7 +283,7 @@ class FlamingoPaLM(nn.Module):
             with torch.no_grad():
                 image_embeds = self.img_encoder(images)
 
-            image_embeds = rearrange(image_embeds, '(b t) ... -> b t ...', b = b)
+            image_embeds = rearrange(image_embeds, '(b t) ... -> b t ...', b = batch)
             image_embeds = self.perceiver_resampler(image_embeds)
 
         # go through layers
@@ -295,7 +297,6 @@ class FlamingoPaLM(nn.Module):
                 text_tokens = flamingo_cross_attn(
                     text_tokens,
                     image_embeds,
-                    time_mask = time_mask,
                     media_locations = media_locations
                 )
 

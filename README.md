@@ -130,6 +130,10 @@ flamingo_logits = flamingo_palm(dialogue, images)
 
 It is quite evident where this is all headed if you think beyond just images.
 
+## Inception
+
+For factual correctness, just imagine where this system would stand if one were to use <a href="https://github.com/lucidrains/retro-pytorch">a state of the art retrieval language model</a> as the base.
+
 ## Citations
 
 ```bibtex

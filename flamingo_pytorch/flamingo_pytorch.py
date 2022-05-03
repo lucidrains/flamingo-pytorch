@@ -188,6 +188,6 @@ class GatedCrossAttentionBlock(nn.Module):
         media,                  # media tensor, encoded by perceiver resample - (batch, time, latents, dim)
         media_locations = None  # boolean tensor indicating positions of media - (batch, sequence)
     ):
-        x = self.attn(x, media, media_locations = media_locations) * self.attn_gate.tan() + x
+        x = self.attn(x, media, media_locations = media_locations) * self.attn_gate.tanh() + x
         x = self.ff(x) * self.ff_gate.tanh()  + x
         return x

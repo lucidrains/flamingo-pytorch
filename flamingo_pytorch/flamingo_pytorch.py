@@ -172,6 +172,12 @@ class MaskedCrossAttention(nn.Module):
         sim = sim - sim.amax(dim = -1, keepdim = True).detach()
         attn = sim.softmax(dim = -1)
 
+        if exists(media_locations) and self.only_attend_immediate_media:
+            # any text without a preceding media needs to have attention zeroed out
+            text_without_media_mask = text_time == 0
+            text_without_media_mask = rearrange(text_without_media_mask, 'b i -> b 1 i 1')
+            attn.masked_fill(text_without_media_mask, 0.)
+
         out = einsum('... i j, ... j d -> ... i d', attn, v)
         out = rearrange(out, 'b h n d -> b n (h d)')
         return self.to_out(out)

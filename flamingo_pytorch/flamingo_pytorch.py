@@ -119,7 +119,8 @@ class MaskedCrossAttention(nn.Module):
         *,
         dim,
         dim_head = 64,
-        heads = 8
+        heads = 8,
+        only_attend_immediate_media = False
     ):
         super().__init__()
         self.scale = dim_head ** -0.5
@@ -131,6 +132,10 @@ class MaskedCrossAttention(nn.Module):
         self.to_q = nn.Linear(dim, inner_dim, bias = False)
         self.to_kv = nn.Linear(dim, inner_dim * 2, bias = False)
         self.to_out = nn.Linear(inner_dim, dim, bias = False)
+
+        # whether for text to only attend to immediate preceding image, or all images
+
+        self.only_attend_immediate_media = only_attend_immediate_media
 
     def forward(
         self,
@@ -156,7 +161,12 @@ class MaskedCrossAttention(nn.Module):
         if exists(media_locations):
             text_time = media_locations.cumsum(dim = -1) # at each boolean of True, increment the time counter (relative to media time)
             media_time = torch.arange(t, device = x.device) + 1
-            text_to_media_mask = rearrange(text_time, 'b i -> b 1 i 1') >= repeat(media_time, 'j -> 1 1 1 (j m)', m = m)
+
+            # text time must equal media time if only attending to most immediate image
+            # otherwise, as long as text time is greater than media time (if attending to all previous images / media)
+            mask_op = torch.eq if self.only_attend_immediate_media else torch.ge
+
+            text_to_media_mask = mask_op(rearrange(text_time, 'b i -> b 1 i 1'), repeat(media_time, 'j -> 1 1 1 (j m)', m = m))
             sim = sim.masked_fill(~text_to_media_mask, -torch.finfo(sim.dtype).max)
 
         sim = sim - sim.amax(dim = -1, keepdim = True).detach()
@@ -173,10 +183,11 @@ class GatedCrossAttentionBlock(nn.Module):
         dim,
         dim_head = 64,
         heads = 8,
-        ff_mult = 4
+        ff_mult = 4,
+        only_attend_immediate_media = False
     ):
         super().__init__()
-        self.attn = MaskedCrossAttention(dim = dim, dim_head = dim_head, heads = heads)
+        self.attn = MaskedCrossAttention(dim = dim, dim_head = dim_head, heads = heads, only_attend_immediate_media = only_attend_immediate_media)
         self.attn_gate = nn.Parameter(torch.tensor([0.]))
 
         self.ff = FeedForward(dim, mult = ff_mult)

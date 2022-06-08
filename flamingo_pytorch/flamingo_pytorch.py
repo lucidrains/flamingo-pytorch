@@ -120,7 +120,7 @@ class MaskedCrossAttention(nn.Module):
         dim,
         dim_head = 64,
         heads = 8,
-        only_attend_immediate_media = False
+        only_attend_immediate_media = True
     ):
         super().__init__()
         self.scale = dim_head ** -0.5
@@ -184,7 +184,7 @@ class GatedCrossAttentionBlock(nn.Module):
         dim_head = 64,
         heads = 8,
         ff_mult = 4,
-        only_attend_immediate_media = False
+        only_attend_immediate_media = True
     ):
         super().__init__()
         self.attn = MaskedCrossAttention(dim = dim, dim_head = dim_head, heads = heads, only_attend_immediate_media = only_attend_immediate_media)

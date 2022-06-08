@@ -210,7 +210,7 @@ class FlamingoPaLM(nn.Module):
         img_encoder=None,
         perceiver_num_latents=64,
         perceiver_depth=2,
-        only_attend_immediate_media=False
+        only_attend_immediate_media=True
     ):
         super().__init__()
 

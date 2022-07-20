@@ -80,12 +80,12 @@ class PerceiverResampler(nn.Module):
         dim_head = 64,
         heads = 8,
         num_latents = 64,
-        num_time_embeds = 4,
+        num_media_embeds = 4,
         ff_mult = 4
     ):
         super().__init__()
         self.latents = nn.Parameter(torch.randn(num_latents, dim))
-        self.time_pos_emb = nn.Parameter(torch.randn(num_time_embeds, 1, dim))
+        self.media_pos_emb = nn.Parameter(torch.randn(num_media_embeds, 1, dim))
 
         self.layers = nn.ModuleList([])
         for _ in range(depth):
@@ -101,7 +101,7 @@ class PerceiverResampler(nn.Module):
             x = rearrange(x, 'b n d -> b 1 n d')
 
         times = x.shape[1]
-        x = x + self.time_pos_emb[:times]
+        x = x + self.media_pos_emb[:times]
 
         latents = repeat(self.latents, 'n d -> b m n d', b = x.shape[0], m = x.shape[1])
 
